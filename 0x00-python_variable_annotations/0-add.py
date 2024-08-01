@@ -3,6 +3,7 @@
 This module houses the definition for a add() function.
 """
 
+
 def add(a: float, b: float) -> float:
     """
     Sums up two give float type number.
