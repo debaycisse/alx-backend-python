@@ -1,4 +1,5 @@
 *main.py
+*.swp
 __pycache__/
 *.pyc
 venv/
