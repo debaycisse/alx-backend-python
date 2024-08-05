@@ -4,10 +4,10 @@ a coroutine function, named wait_n"""
 
 import asyncio
 from typing import List
-wait_random = __import__('0-basic_async_syntax').wait_random
 
 
-async def wait_n(n: int, max_delay: int):
+async def wait_n(n: int, max_delay: int) -> List[float]:
+    wait_random = __import__('0-basic_async_syntax').wait_random
     """Spawns wait_ramdom coroutine in a times
 
     Args:
@@ -18,5 +18,9 @@ async def wait_n(n: int, max_delay: int):
     Returns:
         the list of the coroutine
     """
+    results = []
     tasks = [asyncio.create_task(wait_random(max_delay)) for _ in range(n)]
-    return tasks
+    for com_task in asyncio.as_completed(tasks):
+        res = await com_task
+        results.append(res)
+    return results
