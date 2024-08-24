@@ -1,0 +1,4 @@
+mypy==0.942
+parameterized==0.8.1
+pycodestyle==2.5.0
+requests==2.27.1
