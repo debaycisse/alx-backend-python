@@ -6,3 +6,8 @@ venv/
 .venv/
 env/
 .env/
+
+# Files used during task 0x03. Unittests and Integration Tests
+utils.py
+client.py
+fixtures.py
