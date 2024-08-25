@@ -2,6 +2,7 @@
 """This module houses definition of the tests for the util.py module"""
 from parameterized import parameterized
 from unittest.mock import patch, Mock
+from utils import memoize
 
 import unittest
 import utils
@@ -46,3 +47,29 @@ class TestGetJson(unittest.TestCase):
             mocked_get.assert_called_once_with(test_url)
 
             self.assertEqual(utils.get_json(test_url), test_payload)
+
+
+class TestMemoize(unittest.TestCase):
+    """Tests the memoize function, which demonstrate the memoize concept"""
+
+    def test_memoize(self):
+        """A test unit for the memoize function"""
+
+        class TestClass:
+            """This class is used for testing the memoize function"""
+
+            def a_method(self):
+                """This method is used along with the class for the testing"""
+                return 42
+
+            @memoize
+            def a_property(self):
+                """A property, used for testing the memoize wrapping"""
+                return self.a_method()
+
+        with patch.object(TestClass, 'a_method', return_value=42) as mk_a_mtd:
+            t_cls = TestClass()
+            self.assertEqual(t_cls.a_property, 42)
+            self.assertEqual(t_cls.a_property, 42)
+
+            mk_a_mtd.assert_called_once()
