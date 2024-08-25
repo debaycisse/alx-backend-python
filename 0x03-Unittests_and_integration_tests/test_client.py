@@ -2,7 +2,10 @@
 """This modules houses the definition of a class that tests the
 GithubOrgClient class, defined in the client.py module"""
 import unittest
-from client import GithubOrgClient
+from client import (
+    GithubOrgClient,
+    get_json
+)
 from unittest.mock import (
     patch,
     PropertyMock,
@@ -20,24 +23,23 @@ class TestGithubOrgClient(unittest.TestCase):
     class with other components from other module(s)"""
 
     @parameterized.expand([
-        ('google', {'payload': True}),
-        ('abc', {'payload': False}),
+        ('google', ),
+        ('abc', ),
     ])
-    @patch('utils.requests.get')
-    def test_org(self, org: str, payload: Dict, mock_get: Mock):
+    @patch('client.get_json')
+    def test_org(self, org: str, mock_get_json: Mock):
         """Tests that GithubOrgClient.org returns the correct value"""
-        mock_get.return_value.json.return_value = payload
         cls = GithubOrgClient(org)
-        self.assertEqual(cls.org, payload)
+        cls.org()
+        prmtr = cls.ORG_URL.format(org=org)
+        mock_get_json.called_with_once(prmtr)
 
-    @parameterized.expand([
-        ('google', {'repos_url': 'https://api.github.com/orgs/google'}),
-        ('abc', {'repos_url': 'https://api.github.com/orgs/abc'}),
-    ])
-    def test_public_repos_url(self, org: str, expected: Dict):
+    def test_public_repos_url(self):
         """Tests that GithubOrgCLient._public_repos_url works correctly"""
         with patch('client.GithubOrgClient.org',
                    new_callable=PropertyMock) as mock_org:
-            mock_org.return_value = expected
+            org = 'google'
             cls = GithubOrgClient(org)
-            self.assertEqual(cls._public_repos_url, expected['repos_url'])
+            expected = cls.ORG_URL.format(org=org)
+            mock_org.return_value = {'repos_url': expected}
+            self.assertEqual(cls._public_repos_url, expected)
