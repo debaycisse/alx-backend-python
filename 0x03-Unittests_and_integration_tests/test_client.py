@@ -58,5 +58,5 @@ class TestGithubOrgClient(unittest.TestCase):
             output = [org['name'] for org in response_json]
 
             self.assertEqual(response, output)
-            _pru.assert_called_once_with()
-            mock_get_json.assert_called_once_with(_url)
+            _pru.called_once_with()
+            mock_get_json.called_once_with(_url)
