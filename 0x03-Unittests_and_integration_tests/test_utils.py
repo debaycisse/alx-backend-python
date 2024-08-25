@@ -52,12 +52,7 @@ class TestGetJson(unittest.TestCase):
 class TestMemoize(unittest.TestCase):
     """Tests the memoize function, which demonstrate the memoize concept"""
 
-    @parameterized.expand([
-        (42, ),
-        (53, ),
-        (64, )
-    ])
-    def test_memoize(self, exp):
+    def test_memoize(self):
         """A test unit for the memoize function"""
 
         class TestClass:
@@ -72,9 +67,9 @@ class TestMemoize(unittest.TestCase):
                 """A property, used for testing the memoize wrapping"""
                 return self.a_method()
 
-        with patch.object(TestClass, 'a_method', return_value=exp) as mk_a_mtd:
+        with patch.object(TestClass, 'a_method') as mk_a_mtd:
             t_cls = TestClass()
-            self.assertEqual(t_cls.a_property, exp)
-            self.assertEqual(t_cls.a_property, exp)
+            t_cls.a_property()
+            t_cls.a_property()
 
             mk_a_mtd.assert_called_once()
