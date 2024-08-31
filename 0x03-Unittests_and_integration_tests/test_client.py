@@ -31,10 +31,9 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch('client.get_json')
     def test_org(self, org: str, mock_get_json: Mock):
         """Tests that GithubOrgClient.org returns the correct value"""
+        mock_get_json.return_value = '{} organization'.format(org)
         cls = GithubOrgClient(org)
-        cls.org()
-        prmtr = cls.ORG_URL.format(org=org)
-        mock_get_json.called_with_once(prmtr)
+        self.assertEqual(cls.org, '{} organization'.format(org))
 
     def test_public_repos_url(self):
         """Tests that GithubOrgCLient._public_repos_url works correctly"""
@@ -53,15 +52,14 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_get_json.return_value = response_json
         with patch('client.GithubOrgClient._public_repos_url',
                    new_callable=PropertyMock) as _pru:
-            _url = 'org public url'
+            _url = 'http://org_github_url'
             _pru.return_value = _url
             cls = GithubOrgClient('test_organization')
-            response = cls.public_repos()
             output = [org['name'] for org in response_json]
 
-            self.assertEqual(response, output)
-            _pru.called_once_with()
-            mock_get_json.called_once_with(_url)
+            self.assertEqual(cls.public_repos(), output)
+            _pru.assert_called_once_with()
+            mock_get_json.assert_called_once_with(_url)
 
     @parameterized.expand([
         ({"license": {"key": "my_license"}}, "my_license", True),
@@ -74,8 +72,8 @@ class TestGithubOrgClient(unittest.TestCase):
 
 
 @parameterized_class(
-    ('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'), [
-     (TP[0][0], TP[0][1], TP[0][2], TP[0][3])]
+    ('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'),
+    [(TP[0][0], TP[0][1], TP[0][2], TP[0][3])]
 )
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Tests the integration of the GithubOrgClient and the fixtures"""
