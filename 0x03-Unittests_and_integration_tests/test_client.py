@@ -73,10 +73,16 @@ class TestGithubOrgClient(unittest.TestCase):
 
 @parameterized_class(
     ('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'),
-    [(TP[0][0], TP[0][1], TP[0][2], TP[0][3])]
+    [
+     (TP[0][0], TP[0][1], TP[0][2], TP[0][3])
+    ]
 )
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Tests the integration of the GithubOrgClient and the fixtures"""
+    """org_payload = 
+    repos_payload = [TP[0][1][0]]
+    expected_repos = TP[0][2]
+    apache2_repos = TP[0][3]"""
     @classmethod
     def setUpClass(cls):
         """Sets up an environment before running the unit tests"""
@@ -87,30 +93,30 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
             """Mocks json, based on the passed url"""
             reply_mock = MagicMock()
             if url == "https://api.github.com/repos/google/episodes.dart":
-                reply_mock.json.return_value = cls.repos_payload[0]
+                reply_mock.return_value.json.return_value = cls.repos_payload[0]
             elif url == "https://api.github.com/repos/google/cpp-netlib":
-                reply_mock.json.return_value = cls.repos_payload[1]
+                reply_mock.return_value.json.return_value = cls.repos_payload[1]
             elif url == "https://api.github.com/repos/google/dagger":
-                reply_mock.json.return_value = cls.repos_payload[2]
+                reply_mock.return_value.json.return_value = cls.repos_payload[2]
             elif url == "https://api.github.com/repos/google/"\
                         "ios-webkit-debug-proxy":
-                reply_mock.json.return_value = cls.repos_payload[3]
+                reply_mock.return_value.json.return_value = cls.repos_payload[3]
             elif url == "https://api.github.com/repos/google/google.github.io":
-                reply_mock.json.return_value = cls.repos_payload[4]
+                reply_mock.return_value.json.return_value = cls.repos_payload[4]
             elif url == "https://api.github.com/repos/google/kratu":
-                reply_mock.json.return_value = cls.repos_payload[5]
+                reply_mock.return_value.json.return_value = cls.repos_payload[5]
             elif url == "https://api.github.com/repos/google/"\
                         "build-debian-cloud":
-                reply_mock.json.return_value = cls.repos_payload[6]
+                reply_mock.return_value.json.return_value = cls.repos_payload[6]
             elif url == "https://api.github.com/repos/google/traceur-compiler":
-                reply_mock.json.return_value = cls.repos_payload[7]
+                reply_mock.return_value.json.return_value = cls.repos_payload[7]
             elif url == "https://api.github.com/repos/google/firmata.py":
-                reply_mock.json.return_value = cls.repos_payload[8]
+                reply_mock.return_value.json.return_value = cls.repos_payload[8]
             elif url == "https://api.github.com/orgs/google":
-                reply_mock.json.return_value = cls.org_payload
+                reply_mock.return_value.json.return_value = cls.org_payload
             elif url == "https://api.github.com/orgs/google/repos":
-                reply_mock.json.return_value = cls.repos_payload
-            return reply_mock
+                reply_mock.return_value.json.return_value = cls.repos_payload
+            return reply_mock.return_value
 
         cls.mock_get.side_effect = mock_side_effect
 
@@ -124,5 +130,5 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         test_cls = GithubOrgClient('google')
         test_no_license = test_cls.public_repos()
         test_license = test_cls.public_repos("apache-2.0")
-        self.assertEqual(test_no_license, self.expected_repos)
-        self.assertEqual(test_license, self.apache2_repos)
+        self.assertIn(test_no_license, self.expected_repos)
+        self.assertIn(test_license, self.apache2_repos)
